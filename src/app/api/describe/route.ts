@@ -29,16 +29,11 @@ export async function POST(request: Request) {
           model: "llama-3.2-90b-vision-preview",
           messages: [
             {
-              role: "system",
-              content:
-                'You are a senior product designer and UI/UX expert. Analyze wireframes and sketches to produce detailed product specifications. Return JSON: { title: string, overview: string, components: [{ name: string, type: string, description: string, interactions: string[] }], userFlow: string[], technicalNotes: string[], accessibilityNotes: string[], estimatedComplexity: string }',
-            },
-            {
               role: "user",
               content: [
                 {
                   type: "text",
-                  text: "Analyze this wireframe/sketch and generate a detailed product specification.",
+                  text: 'You are a senior product designer and UI/UX expert. Analyze this wireframe/sketch and generate a detailed product specification. You MUST respond with valid JSON only, no markdown fences. Use this exact structure: { "title": "string", "overview": "string", "components": [{ "name": "string", "type": "string", "description": "string", "interactions": ["string"] }], "userFlow": ["string"], "technicalNotes": ["string"], "accessibilityNotes": ["string"], "estimatedComplexity": "Low|Medium|High" }',
                 },
                 {
                   type: "image_url",
@@ -49,7 +44,6 @@ export async function POST(request: Request) {
           ],
           temperature: 0.7,
           max_tokens: 2048,
-          response_format: { type: "json_object" },
         }),
       }
     );
@@ -73,7 +67,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const spec = JSON.parse(content);
+    const cleaned = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
+    const spec = JSON.parse(cleaned);
     return Response.json({ spec });
   } catch (err) {
     console.error("Describe API error:", err);
