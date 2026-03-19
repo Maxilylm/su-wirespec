@@ -26,7 +26,7 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "llama-3.2-90b-vision-preview",
+          model: "llama-3.2-11b-vision-preview",
           messages: [
             {
               role: "user",
@@ -51,8 +51,10 @@ export async function POST(request: Request) {
     if (!res.ok) {
       const errBody = await res.text();
       console.error("Groq API error:", res.status, errBody);
+      let detail = "";
+      try { const j = JSON.parse(errBody); detail = j.error?.message || errBody; } catch { detail = errBody.slice(0, 200); }
       return Response.json(
-        { error: `Groq API error: ${res.status}` },
+        { error: `Groq API error: ${detail}` },
         { status: 502 }
       );
     }

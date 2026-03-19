@@ -59,6 +59,30 @@ function specToMarkdown(spec: Spec): string {
 }
 
 const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4MB
+const MAX_IMAGE_DIM = 1024; // Resize to max 1024px for Groq vision
+
+function resizeImage(dataUrl: string): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width <= MAX_IMAGE_DIM && height <= MAX_IMAGE_DIM) {
+        resolve(dataUrl);
+        return;
+      }
+      const ratio = Math.min(MAX_IMAGE_DIM / width, MAX_IMAGE_DIM / height);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d")!;
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL("image/jpeg", 0.85));
+    };
+    img.src = dataUrl;
+  });
+}
 
 // ── Component ──────────────────────────────────────────────────────────────
 
@@ -85,8 +109,10 @@ export default function Home() {
     setFileName(file.name);
     setSpec(null);
     const reader = new FileReader();
-    reader.onload = (e) => {
-      setImageData(e.target?.result as string);
+    reader.onload = async (e) => {
+      const raw = e.target?.result as string;
+      const resized = await resizeImage(raw);
+      setImageData(resized);
     };
     reader.readAsDataURL(file);
   }, []);
