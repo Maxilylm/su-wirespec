@@ -2,7 +2,7 @@
 
 > Upload a wireframe or sketch and get back a written product specification.
 
-**[Live demo](https://su-wirespec.vercel.app)**
+**[Live demo](https://wirespec-mlx.vercel.app)**
 
 Turning a whiteboard photo into something a developer can build usually means someone sits down and writes the spec by hand. WireSpec accepts an image of a wireframe or sketch, downscales it in the browser before upload, and passes it to Groq's Llama 4 Scout vision model. What comes back is structured: an overview, an inventory of UI components and their interactions, a step-by-step user flow, technical and accessibility notes, and a complexity rating you can export straight to Markdown.
 
@@ -32,4 +32,4 @@ Set `GROQ_API_KEY` in `.env.local`.
 
 ---
 
-Part of a series of 91 small web apps. [Browse them all](https://su-slopmachine.vercel.app).
+Part of a series of 91 small web apps. [Browse them all](https://lorenzoylosada.vercel.app).
